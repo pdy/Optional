@@ -17,7 +17,7 @@ flags = [
     '-x','c++',
     '-I','.',
     '-I','../',
-#    '-isystem', "cmdline"
+    '-isystem', "./third-party/gtest/include"
 ]
 
 
