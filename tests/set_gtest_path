@@ -26,8 +26,8 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-symbolic_link=./third-party/$1
-path=$2
+symbolic_link=./third-party/gtest
+path=$1
 
 mkdir -p third-party
 ln -sf $path $symbolic_link
