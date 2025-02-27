@@ -12,7 +12,7 @@ flags = [
     '-Wno-c++98-compat',
     '-Wno-c++98-compat-pedantic',
     '-Wno-padded',
-    '-std=c++14',
+    '-std=c++20',
     '-stdlib=libstdc++',
     '-x','c++',
     '-I','.',

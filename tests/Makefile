@@ -13,7 +13,7 @@ TEST_FLAGS := -Wno-global-constructors -Wno-exit-time-destructors -Wno-missing-p
 	-Wno-missing-variable-declarations -Wno-gnu-zero-variadic-macro-arguments -Wno-unsafe-buffer-usage
 
 SANITIZER_FLAGS: -fsanitize=address -fsanitize=undefined
-FLAGS := -std=c++14 -Wno-deprecated-register -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-used-but-marked-unused
+FLAGS := -std=c++20 -Wno-deprecated-register -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-used-but-marked-unused
 
 LD_FLAGS := -L$(GTEST_PATH)/lib
 
