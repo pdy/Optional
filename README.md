@@ -1,2 +1,2 @@
 # Optional
-Nullable object implementation.
+Single-file, header-only nullable object implementation.
