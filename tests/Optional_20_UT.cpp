@@ -48,12 +48,12 @@ constexpr bool has_noexcept_swap()
 } // namespace
 
 template<typename T>
-class OptionalArithmeticTests : public testing::Test
+class Optional_20_ArithTests : public testing::Test
 {};
 
-TYPED_TEST_SUITE_P(OptionalArithmeticTests);
+TYPED_TEST_SUITE_P(Optional_20_ArithTests);
 
-TYPED_TEST_P(OptionalArithmeticTests, emptyTest)
+TYPED_TEST_P(Optional_20_ArithTests, emptyTest)
 {
   const Optional<TypeParam> empty;
 
@@ -66,7 +66,7 @@ TYPED_TEST_P(OptionalArithmeticTests, emptyTest)
   EXPECT_TRUE(std::is_trivially_destructible_v<decltype(empty)>);
 }
 
-TYPED_TEST_P(OptionalArithmeticTests, ctorAndReset)
+TYPED_TEST_P(Optional_20_ArithTests, ctorAndReset)
 {
   Optional<TypeParam> val(TypeParam{10});
 
@@ -89,7 +89,7 @@ TYPED_TEST_P(OptionalArithmeticTests, ctorAndReset)
   EXPECT_TRUE(std::is_trivially_destructible_v<decltype(val)>);
 }
 
-TYPED_TEST_P(OptionalArithmeticTests, assignValue)
+TYPED_TEST_P(Optional_20_ArithTests, assignValue)
 {
   const Optional<TypeParam> val = TypeParam{10};
 
@@ -99,7 +99,7 @@ TYPED_TEST_P(OptionalArithmeticTests, assignValue)
   EXPECT_EQ(TypeParam{10}, val.value_or(TypeParam{5}));
 }
 
-TYPED_TEST_P(OptionalArithmeticTests, assingToEmpty)
+TYPED_TEST_P(Optional_20_ArithTests, assingToEmpty)
 {
   Optional<TypeParam> val;
   val = TypeParam{10};
@@ -110,7 +110,7 @@ TYPED_TEST_P(OptionalArithmeticTests, assingToEmpty)
   EXPECT_EQ(TypeParam{10}, val.value_or(TypeParam{5}));
 }
 
-TYPED_TEST_P(OptionalArithmeticTests, returnFromCallable)
+TYPED_TEST_P(Optional_20_ArithTests, returnFromCallable)
 {
   const auto callable = []() -> Optional<TypeParam> { return TypeParam{10}; };
   const auto callable_2 = []() -> Optional<TypeParam> { return Optional<TypeParam>{TypeParam{10}}; };
@@ -134,7 +134,7 @@ TYPED_TEST_P(OptionalArithmeticTests, returnFromCallable)
   EXPECT_TRUE(std::is_trivially_destructible_v<decltype(val_2)>);
 }
 
-REGISTER_TYPED_TEST_SUITE_P(OptionalArithmeticTests, emptyTest, ctorAndReset, assignValue, assingToEmpty, returnFromCallable);
+REGISTER_TYPED_TEST_SUITE_P(Optional_20_ArithTests, emptyTest, ctorAndReset, assignValue, assingToEmpty, returnFromCallable);
 
 using TestTypes = ::testing::Types<
   char, signed char, unsigned char,
@@ -150,4 +150,4 @@ using TestTypes = ::testing::Types<
   intmax_t, intptr_t, uintmax_t, uintptr_t
 >;
  
-INSTANTIATE_TYPED_TEST_SUITE_P(My, OptionalArithmeticTests, TestTypes);
+INSTANTIATE_TYPED_TEST_SUITE_P(My, Optional_20_ArithTests, TestTypes);

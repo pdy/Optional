@@ -28,9 +28,9 @@ if [ $# -eq 1 ]; then
   BUILD=$1
 fi
 
-make clean
-make $BUILD
+make clean &&
+make $BUILD &&
 
-pushd ./build/$BUILD/bin
+pushd ./build/$BUILD/bin &&
 ./Optional_20_UT && ./Optional_11_UT
 popd
