@@ -52,7 +52,7 @@ struct AddArrowOperator<T, TSelf, std::false_type>
 };
 
 template<typename T>
-struct storage_base
+struct storage_trivial_dtor
 {
   union {
     char dummy;
@@ -61,39 +61,47 @@ struct storage_base
 
   bool engaged;
 
-  explicit constexpr storage_base() noexcept
+  explicit constexpr storage_trivial_dtor() noexcept
     : dummy{0}, engaged{false}
   {}
 
-  explicit constexpr storage_base(const T &val) noexcept
+  explicit constexpr storage_trivial_dtor(const T &val) noexcept
     : value{val}, engaged{true}
   {}
 
-  explicit constexpr storage_base(T &&val) noexcept
+  explicit constexpr storage_trivial_dtor(T &&val) noexcept
     : value{std::move(val)}, engaged{true}
   {}
-};
-
-template<typename T>
-struct storage_trivial_dtor : storage_base<T>
-{
-  using Base = storage_base<T>;
-  using Base::Base ;
-
   ~storage_trivial_dtor() = default;
 
 };
 
 template<typename T>
-struct storage_non_trivial_dtor : storage_base<T>
+struct storage_non_trivial_dtor
 {
-  using Base = storage_base<T>;
-  using Base::Base;
+  union {
+    char dummy;
+    T value;
+  };
 
+  bool engaged;
+
+  explicit constexpr storage_non_trivial_dtor() noexcept
+    : dummy{0}, engaged{false}
+  {}
+
+  explicit constexpr storage_non_trivial_dtor(const T &val) noexcept
+    : value{val}, engaged{true}
+  {}
+
+  explicit constexpr storage_non_trivial_dtor(T &&val) noexcept
+    : value{std::move(val)}, engaged{true}
+  {}
+  
   ~storage_non_trivial_dtor()
   {
-    if(Base::engaged)
-      Base::value.T::~T();
+    if(engaged)
+      value.T::~T();
   }
 };
 

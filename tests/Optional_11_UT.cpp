@@ -111,6 +111,24 @@ struct Observe
 
 };
 
+struct DtorCalled
+{
+  bool &dtorCalled;
+
+  DtorCalled(const DtorCalled&) = default;
+  DtorCalled(DtorCalled&&) = default;
+
+  DtorCalled(bool &dtorCalledRef)
+    : dtorCalled{dtorCalledRef}
+  {
+  }
+
+  ~DtorCalled()
+  {
+    dtorCalled = true;
+  }
+};
+
 } // namespace
 
 TEST(Optional_11_UT, empty)
@@ -177,4 +195,20 @@ TEST(Optional_11_UT, observeMoveCtorWithCallable)
   EXPECT_TRUE(std::is_trivially_destructible<decltype(val)>::value);
 
   EXPECT_EQ(Event::MoveCtor, val->event);
+}
+
+TEST(Optional_11_UT, dtorCalledOnReset)
+{
+  bool dtorCalled = false;
+  
+  Optional<DtorCalled> val = DtorCalled(dtorCalled);
+  
+  EXPECT_FALSE(!val);
+  EXPECT_TRUE(val);
+  EXPECT_TRUE(val.has_value());
+  EXPECT_TRUE(size_check<DtorCalled>());
+  EXPECT_TRUE(has_noexcept_swap<decltype(val)>());
+  EXPECT_FALSE(std::is_trivially_destructible<decltype(val)>::value);
+
+  EXPECT_TRUE(dtorCalled);
 }
