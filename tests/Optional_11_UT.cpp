@@ -105,6 +105,10 @@ struct Observe
     : event{Event::CopyCtor}, placeholder{0}
   {}
 
+  Observe(Observe&&)
+    : event{Event::MoveCtor}, placeholder{0}
+  {}
+
 };
 
 } // namespace
@@ -141,7 +145,7 @@ TEST(Optional_11_UT, observeEmptyCtor)
   EXPECT_TRUE(std::is_trivially_destructible<decltype(empty)>::value);
 }
 
-TEST(Optional_11_UT, observeDefaultCtor)
+TEST(Optional_11_UT, observeMoveCtor)
 {
   const Optional<Observe> val{Observe{}};
   
@@ -152,5 +156,25 @@ TEST(Optional_11_UT, observeDefaultCtor)
   EXPECT_TRUE(has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible<decltype(val)>::value);
 
-  EXPECT_EQ(Event::CopyCtor, val->event);
+  EXPECT_EQ(Event::MoveCtor, val->event);
+}
+
+TEST(Optional_11_UT, observeMoveCtorWithCallable)
+{
+  const auto callable = []() -> Optional<Observe>
+  {
+    Observe ret;
+    return ret;
+  };
+
+  const auto val = callable();
+  
+  EXPECT_FALSE(!val);
+  EXPECT_TRUE(val);
+  EXPECT_TRUE(val.has_value());
+  EXPECT_TRUE(size_check<Observe>());
+  EXPECT_TRUE(has_noexcept_swap<decltype(val)>());
+  EXPECT_TRUE(std::is_trivially_destructible<decltype(val)>::value);
+
+  EXPECT_EQ(Event::MoveCtor, val->event);
 }
