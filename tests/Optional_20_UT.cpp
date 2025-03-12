@@ -25,27 +25,12 @@
 #include <gtest/gtest.h>
 
 #include <Optional.hpp>
-#include <type_traits>
 
+#include "Common.hpp"
+
+#include <type_traits>
 #include <cstddef>
 #include <cstdint>
-
-namespace {
-
-template<typename T>
-constexpr bool size_check()
-{
-  return sizeof(Optional<T>) == sizeof(T) + std::alignment_of<T>::value;
-}
-
-template<typename T>
-constexpr bool has_noexcept_swap()
-{
-  using NonConst_T = std::remove_const<T>;
-  return noexcept(swap(std::declval<NonConst_T&>(), std::declval<NonConst_T&>()));
-}
-
-} // namespace
 
 template<typename T>
 class Optional_20_ArithTests : public testing::Test
@@ -61,8 +46,8 @@ TYPED_TEST_P(Optional_20_ArithTests, emptyTest)
   EXPECT_TRUE(!empty);
   EXPECT_FALSE(empty.has_value());
   EXPECT_EQ(TypeParam{5}, empty.value_or(TypeParam{5}));
-  EXPECT_TRUE(size_check<TypeParam>());
-  EXPECT_TRUE(has_noexcept_swap<decltype(empty)>());
+  EXPECT_TRUE(util::size_check<TypeParam>());
+  EXPECT_TRUE(util::has_noexcept_swap<decltype(empty)>());
   EXPECT_TRUE(std::is_trivially_destructible_v<decltype(empty)>);
 }
 
@@ -74,8 +59,8 @@ TYPED_TEST_P(Optional_20_ArithTests, ctorAndReset)
   EXPECT_FALSE(!val);
   EXPECT_TRUE(val.has_value());
   EXPECT_EQ(TypeParam{10}, val.value_or(TypeParam{5}));
-  EXPECT_TRUE(size_check<TypeParam>());
-  EXPECT_TRUE(has_noexcept_swap<decltype(val)>());
+  EXPECT_TRUE(util::size_check<TypeParam>());
+  EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible_v<decltype(val)>);
 
   val.reset();
@@ -84,8 +69,8 @@ TYPED_TEST_P(Optional_20_ArithTests, ctorAndReset)
   EXPECT_TRUE(!val);
   EXPECT_FALSE(val.has_value());
   EXPECT_EQ(TypeParam{5}, val.value_or(TypeParam{5}));
-  EXPECT_TRUE(size_check<TypeParam>());
-  EXPECT_TRUE(has_noexcept_swap<decltype(val)>());
+  EXPECT_TRUE(util::size_check<TypeParam>());
+  EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible_v<decltype(val)>);
 }
 
@@ -122,15 +107,15 @@ TYPED_TEST_P(Optional_20_ArithTests, returnFromCallable)
   EXPECT_FALSE(!val);
   EXPECT_TRUE(val.has_value());
   EXPECT_EQ(TypeParam{10}, val.value_or(TypeParam{5}));
-  EXPECT_TRUE(size_check<TypeParam>());
-  EXPECT_TRUE(has_noexcept_swap<decltype(val)>());
+  EXPECT_TRUE(util::size_check<TypeParam>());
+  EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible_v<decltype(val)>);
 
   EXPECT_TRUE(val_2);
   EXPECT_FALSE(!val_2);
   EXPECT_TRUE(val_2.has_value());
   EXPECT_EQ(TypeParam{10}, val_2.value_or(TypeParam{5}));
-  EXPECT_TRUE(has_noexcept_swap<decltype(val_2)>());
+  EXPECT_TRUE(util::has_noexcept_swap<decltype(val_2)>());
   EXPECT_TRUE(std::is_trivially_destructible_v<decltype(val_2)>);
 }
 

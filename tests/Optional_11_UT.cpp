@@ -25,26 +25,15 @@
 #include <gtest/gtest.h>
 
 #include <Optional.hpp>
-#include <type_traits>
 
+#include "Common.hpp"
+
+#include <type_traits>
 #include <cstddef>
 #include <cstdint>
 
 
 namespace {
-
-template<typename T>
-constexpr bool size_check()
-{
-  return sizeof(Optional<T>) == sizeof(T) + std::alignment_of<T>::value;
-}
-
-template<typename T>
-constexpr bool has_noexcept_swap()
-{
-  using NonConst_T = std::remove_const<T>;
-  return noexcept(swap(std::declval<NonConst_T&>(), std::declval<NonConst_T&>()));
-}
 
 template<typename T>
 void check_arith_empty()
@@ -55,8 +44,8 @@ void check_arith_empty()
   EXPECT_TRUE(!empty);
   EXPECT_FALSE(empty.has_value());
   EXPECT_EQ(T{5}, empty.value_or(T{5}));
-  EXPECT_TRUE(size_check<T>());
-  EXPECT_TRUE(has_noexcept_swap<decltype(empty)>());
+  EXPECT_TRUE(util::size_check<T>());
+  EXPECT_TRUE(util::has_noexcept_swap<decltype(empty)>());
   EXPECT_TRUE(std::is_trivially_destructible<decltype(empty)>::value);
 }
 
@@ -69,8 +58,8 @@ void check_arith_ctor_and_reset()
   EXPECT_FALSE(!val);
   EXPECT_TRUE(val.has_value());
   EXPECT_EQ(TypeParam{10}, val.value_or(TypeParam{5}));
-  EXPECT_TRUE(size_check<TypeParam>());
-  EXPECT_TRUE(has_noexcept_swap<decltype(val)>());
+  EXPECT_TRUE(util::size_check<TypeParam>());
+  EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible<decltype(val)>::value);
 
   val.reset();
@@ -79,8 +68,8 @@ void check_arith_ctor_and_reset()
   EXPECT_TRUE(!val);
   EXPECT_FALSE(val.has_value());
   EXPECT_EQ(TypeParam{5}, val.value_or(TypeParam{5}));
-  EXPECT_TRUE(size_check<TypeParam>());
-  EXPECT_TRUE(has_noexcept_swap<decltype(val)>());
+  EXPECT_TRUE(util::size_check<TypeParam>());
+  EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible<decltype(val)>::value);
 
 }
@@ -158,8 +147,8 @@ TEST(Optional_11_UT, observeEmptyCtor)
   EXPECT_FALSE(empty);
   EXPECT_TRUE(!empty);
   EXPECT_FALSE(empty.has_value());
-  EXPECT_TRUE(size_check<Observe>());
-  EXPECT_TRUE(has_noexcept_swap<decltype(empty)>());
+  EXPECT_TRUE(util::size_check<Observe>());
+  EXPECT_TRUE(util::has_noexcept_swap<decltype(empty)>());
   EXPECT_TRUE(std::is_trivially_destructible<decltype(empty)>::value);
 }
 
@@ -170,8 +159,8 @@ TEST(Optional_11_UT, observeMoveCtor)
   EXPECT_FALSE(!val);
   EXPECT_TRUE(val);
   EXPECT_TRUE(val.has_value());
-  EXPECT_TRUE(size_check<Observe>());
-  EXPECT_TRUE(has_noexcept_swap<decltype(val)>());
+  EXPECT_TRUE(util::size_check<Observe>());
+  EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible<decltype(val)>::value);
 
   EXPECT_EQ(Event::MoveCtor, val->event);
@@ -190,8 +179,8 @@ TEST(Optional_11_UT, observeMoveCtorWithCallable)
   EXPECT_FALSE(!val);
   EXPECT_TRUE(val);
   EXPECT_TRUE(val.has_value());
-  EXPECT_TRUE(size_check<Observe>());
-  EXPECT_TRUE(has_noexcept_swap<decltype(val)>());
+  EXPECT_TRUE(util::size_check<Observe>());
+  EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible<decltype(val)>::value);
 
   EXPECT_EQ(Event::MoveCtor, val->event);
@@ -206,8 +195,8 @@ TEST(Optional_11_UT, dtorCalledOnReset)
   EXPECT_FALSE(!val);
   EXPECT_TRUE(val);
   EXPECT_TRUE(val.has_value());
-  EXPECT_TRUE(size_check<DtorCalled>());
-  EXPECT_TRUE(has_noexcept_swap<decltype(val)>());
+  EXPECT_TRUE(util::size_check<DtorCalled>());
+  EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_FALSE(std::is_trivially_destructible<decltype(val)>::value);
 
   EXPECT_TRUE(dtorCalled);
