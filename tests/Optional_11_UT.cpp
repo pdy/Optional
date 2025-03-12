@@ -148,7 +148,7 @@ TEST(Optional_11_UT, observeEmptyCtor)
   EXPECT_TRUE(!empty);
   EXPECT_FALSE(empty.has_value());
   EXPECT_TRUE(util::size_check<Observe>());
-  EXPECT_TRUE(util::has_noexcept_swap<decltype(empty)>());
+  EXPECT_FALSE(util::has_noexcept_swap<decltype(empty)>());
   EXPECT_TRUE(std::is_trivially_destructible<decltype(empty)>::value);
 }
 
@@ -160,7 +160,7 @@ TEST(Optional_11_UT, observeMoveCtor)
   EXPECT_TRUE(val);
   EXPECT_TRUE(val.has_value());
   EXPECT_TRUE(util::size_check<Observe>());
-  EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
+  EXPECT_FALSE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible<decltype(val)>::value);
 
   EXPECT_EQ(Event::MoveCtor, val->event);
@@ -180,7 +180,7 @@ TEST(Optional_11_UT, observeMoveCtorWithCallable)
   EXPECT_TRUE(val);
   EXPECT_TRUE(val.has_value());
   EXPECT_TRUE(util::size_check<Observe>());
-  EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
+  EXPECT_FALSE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible<decltype(val)>::value);
 
   EXPECT_EQ(Event::MoveCtor, val->event);

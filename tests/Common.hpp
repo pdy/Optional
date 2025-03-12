@@ -37,7 +37,7 @@ constexpr bool size_check()
 template<typename T>
 constexpr bool has_noexcept_swap()
 {
-  using NonConst_T = std::remove_const<T>;
+  using NonConst_T = typename std::remove_const<T>::type;
   return noexcept(swap(std::declval<NonConst_T&>(), std::declval<NonConst_T&>()));
 }
 
