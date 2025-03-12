@@ -57,8 +57,8 @@ main-build: pre-build
 clean:
 	@rm -r $(ROOT_BUILD)
 
-#SRC_TEST := $(wildcard $(TESTS_ROOT)/*.cpp)
-#OBJS_TEST := $(patsubst $(TESTS_ROOT)/%.cpp,$(OBJ_PATH)/%.o, $(SRC_TEST))
+SRC_TEST := $(wildcard $(TESTS_ROOT)/*.cpp)
+OBJS_TEST := $(patsubst $(TESTS_ROOT)/%.cpp,$(OBJ_PATH)/%.o, $(SRC_TEST))
 
 # -include $(TESTS_ROOT)/../pch.hpp to be added after CXX
 $(DESTBIN)/Optional_20_UT: $(OBJ_PATH)/Optional_20_UT.o
@@ -70,11 +70,11 @@ $(DESTBIN)/Optional_11_UT: $(OBJ_PATH)/Optional_11_UT.o
 	@echo "$<"
 
 # -include $(TESTS_ROOT)/../pch.hpp to be added after CXX
-$(OBJ_PATH)/Optional_20_UT.o: 
-	@$(CXX) $(CXXFLAGS_20) $(TEST_FLAGS) -c -o $@ $(TESTS_ROOT)/Optional_20_UT.cpp
+$(OBJ_PATH)/Optional_20_UT.o: $(TESTS_ROOT)/Optional_20_UT.cpp
+	@$(CXX) $(CXXFLAGS_20) $(TEST_FLAGS) -c -o $@ $^ 
 	@echo "$<"
 
-$(OBJ_PATH)/Optional_11_UT.o:
-	@$(CXX) $(CXXFLAGS_11) $(TEST_FLAGS) -c -o $@ $(TESTS_ROOT)/Optional_11_UT.cpp
+$(OBJ_PATH)/Optional_11_UT.o: $(TESTS_ROOT)/Optional_11_UT.cpp
+	@$(CXX) $(CXXFLAGS_11) $(TEST_FLAGS) -c -o $@ $^
 	@echo "$<"
 

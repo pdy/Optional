@@ -25,10 +25,25 @@
 BUILD=debug
 
 if [ $# -eq 1 ]; then
-  BUILD=$1
+  
+  if [[ "$1" == "clean" ]]; then
+    echo "running clean"
+    make clean 
+  else
+    BUILD=$1
+  fi
+  
 fi
 
-make clean 
+if [ $# -eq 2 ]; then
+  
+  if [[ "$2" == "clean" ]]; then
+    echo "running clean"
+    make clean 
+  fi
+  
+fi
+
 make $BUILD &&
 
 pushd ./build/$BUILD/bin &&
