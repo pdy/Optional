@@ -38,7 +38,8 @@ using non_const_t = typename std::remove_const<T>::type;
 template<typename T>
 struct is_noexcept_swappable
 {
-  static constexpr bool value = noexcept(swap(std::declval<T&>(), std::declval<T&>()));
+  using NonConst_T = non_const_t<T>;
+  static constexpr bool value = noexcept(swap(std::declval<NonConst_T&>(), std::declval<NonConst_T&>()));
 };
 
 template<typename T, typename TSelf, typename Tag>
