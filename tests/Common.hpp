@@ -41,4 +41,48 @@ constexpr bool has_noexcept_swap()
   return noexcept(swap(std::declval<NonConst_T&>(), std::declval<NonConst_T&>()));
 }
 
+enum class Event
+{
+  DefaultCtor,
+  CopyCtor,
+  MoveCtor
+};
+
+struct Observe
+{
+  Event event;
+  int placeholder;
+
+  Observe()
+    : event{Event::DefaultCtor}, placeholder{0}
+  {}
+
+  Observe(const Observe&)
+    : event{Event::CopyCtor}, placeholder{0}
+  {}
+
+  Observe(Observe&&)
+    : event{Event::MoveCtor}, placeholder{0}
+  {}
+
+};
+
+struct DtorCalled
+{
+  bool &dtorCalled;
+
+  DtorCalled(const DtorCalled&) = default;
+  DtorCalled(DtorCalled&&) = default;
+
+  DtorCalled(bool &dtorCalledRef)
+    : dtorCalled{dtorCalledRef}
+  {
+  }
+
+  ~DtorCalled()
+  {
+    dtorCalled = true;
+  }
+};
+
 } // namespace util

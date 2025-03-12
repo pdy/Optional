@@ -74,50 +74,6 @@ void check_arith_ctor_and_reset()
 
 }
 
-enum class Event
-{
-  DefaultCtor,
-  CopyCtor,
-  MoveCtor
-};
-
-struct Observe
-{
-  Event event;
-  int placeholder;
-
-  Observe()
-    : event{Event::DefaultCtor}, placeholder{0}
-  {}
-
-  Observe(const Observe&)
-    : event{Event::CopyCtor}, placeholder{0}
-  {}
-
-  Observe(Observe&&)
-    : event{Event::MoveCtor}, placeholder{0}
-  {}
-
-};
-
-struct DtorCalled
-{
-  bool &dtorCalled;
-
-  DtorCalled(const DtorCalled&) = default;
-  DtorCalled(DtorCalled&&) = default;
-
-  DtorCalled(bool &dtorCalledRef)
-    : dtorCalled{dtorCalledRef}
-  {
-  }
-
-  ~DtorCalled()
-  {
-    dtorCalled = true;
-  }
-};
-
 } // namespace
 
 TEST(Optional_11_UT, empty)
@@ -142,35 +98,35 @@ TEST(Optional_11_UT, ctorAndReset)
 
 TEST(Optional_11_UT, observeEmptyCtor)
 {
-  const Optional<Observe> empty;
+  const Optional<util::Observe> empty;
   
   EXPECT_FALSE(empty);
   EXPECT_TRUE(!empty);
   EXPECT_FALSE(empty.has_value());
-  EXPECT_TRUE(util::size_check<Observe>());
+  EXPECT_TRUE(util::size_check<util::Observe>());
   EXPECT_FALSE(util::has_noexcept_swap<decltype(empty)>());
   EXPECT_TRUE(std::is_trivially_destructible<decltype(empty)>::value);
 }
 
 TEST(Optional_11_UT, observeMoveCtor)
 {
-  const Optional<Observe> val{Observe{}};
+  const Optional<util::Observe> val{util::Observe{}};
   
   EXPECT_FALSE(!val);
   EXPECT_TRUE(val);
   EXPECT_TRUE(val.has_value());
-  EXPECT_TRUE(util::size_check<Observe>());
+  EXPECT_TRUE(util::size_check<util::Observe>());
   EXPECT_FALSE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible<decltype(val)>::value);
 
-  EXPECT_EQ(Event::MoveCtor, val->event);
+  EXPECT_EQ(util::Event::MoveCtor, val->event);
 }
 
 TEST(Optional_11_UT, observeMoveCtorWithCallable)
 {
-  const auto callable = []() -> Optional<Observe>
+  const auto callable = []() -> Optional<util::Observe>
   {
-    Observe ret;
+    util::Observe ret;
     return ret;
   };
 
@@ -179,23 +135,23 @@ TEST(Optional_11_UT, observeMoveCtorWithCallable)
   EXPECT_FALSE(!val);
   EXPECT_TRUE(val);
   EXPECT_TRUE(val.has_value());
-  EXPECT_TRUE(util::size_check<Observe>());
+  EXPECT_TRUE(util::size_check<util::Observe>());
   EXPECT_FALSE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible<decltype(val)>::value);
 
-  EXPECT_EQ(Event::MoveCtor, val->event);
+  EXPECT_EQ(util::Event::MoveCtor, val->event);
 }
 
 TEST(Optional_11_UT, dtorCalledOnReset)
 {
   bool dtorCalled = false;
   
-  Optional<DtorCalled> val = DtorCalled(dtorCalled);
+  Optional<util::DtorCalled> val = util::DtorCalled(dtorCalled);
   
   EXPECT_FALSE(!val);
   EXPECT_TRUE(val);
   EXPECT_TRUE(val.has_value());
-  EXPECT_TRUE(util::size_check<DtorCalled>());
+  EXPECT_TRUE(util::size_check<util::DtorCalled>());
   EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_FALSE(std::is_trivially_destructible<decltype(val)>::value);
 

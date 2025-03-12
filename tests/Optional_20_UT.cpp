@@ -136,3 +136,66 @@ using TestTypes = ::testing::Types<
 >;
  
 INSTANTIATE_TYPED_TEST_SUITE_P(My, Optional_20_ArithTests, TestTypes);
+
+
+TEST(Optional_20_UT, observeEmptyCtor)
+{
+  const Optional<util::Observe> empty;
+  
+  EXPECT_FALSE(empty);
+  EXPECT_TRUE(!empty);
+  EXPECT_FALSE(empty.has_value());
+  EXPECT_TRUE(util::size_check<util::Observe>());
+  EXPECT_FALSE(util::has_noexcept_swap<decltype(empty)>());
+  EXPECT_TRUE(std::is_trivially_destructible<decltype(empty)>::value);
+}
+
+TEST(Optional_20_UT, observeMoveCtor)
+{
+  const Optional<util::Observe> val{util::Observe{}};
+  
+  EXPECT_FALSE(!val);
+  EXPECT_TRUE(val);
+  EXPECT_TRUE(val.has_value());
+  EXPECT_TRUE(util::size_check<util::Observe>());
+  EXPECT_FALSE(util::has_noexcept_swap<decltype(val)>());
+  EXPECT_TRUE(std::is_trivially_destructible<decltype(val)>::value);
+
+  EXPECT_EQ(util::Event::MoveCtor, val->event);
+}
+
+TEST(Optional_20_UT, observeMoveCtorWithCallable)
+{
+  const auto callable = []() -> Optional<util::Observe>
+  {
+    util::Observe ret;
+    return ret;
+  };
+
+  const auto val = callable();
+  
+  EXPECT_FALSE(!val);
+  EXPECT_TRUE(val);
+  EXPECT_TRUE(val.has_value());
+  EXPECT_TRUE(util::size_check<util::Observe>());
+  EXPECT_FALSE(util::has_noexcept_swap<decltype(val)>());
+  EXPECT_TRUE(std::is_trivially_destructible<decltype(val)>::value);
+
+  EXPECT_EQ(util::Event::MoveCtor, val->event);
+}
+
+TEST(Optional_20_UT, dtorCalledOnReset)
+{
+  bool dtorCalled = false;
+  
+  Optional<util::DtorCalled> val = util::DtorCalled(dtorCalled);
+  
+  EXPECT_FALSE(!val);
+  EXPECT_TRUE(val);
+  EXPECT_TRUE(val.has_value());
+  EXPECT_TRUE(util::size_check<util::DtorCalled>());
+  EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
+  EXPECT_FALSE(std::is_trivially_destructible<decltype(val)>::value);
+
+  EXPECT_TRUE(dtorCalled);
+}

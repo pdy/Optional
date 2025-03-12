@@ -128,6 +128,8 @@ class Optional final : public detail::AddArrowOperator<T, Optional<T>, typename 
   {
     assert(!m_storage.engaged);
 
+    // TODO: this will not work for an array
+    // is it a real concern?
     ::new(static_cast<void*>(get())) T(std::forward<Args>(args)...);
     m_storage.engaged = true;
   }
