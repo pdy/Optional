@@ -152,9 +152,6 @@ public:
       init(*other);
   }
 
-
-
-
   Optional(Optional<T> &&other)
     : m_storage()
   {
@@ -171,7 +168,7 @@ public:
 
   constexpr explicit operator bool() const noexcept { return m_storage.engaged; }
   constexpr bool has_value() const noexcept { return m_storage.engaged; }
-  
+
   const T& value() const & { return **this; }
   T& value() & { return **this; }
 
@@ -182,7 +179,7 @@ public:
   {
     if(has_value())
       return **this;
-   
+
     return std::forward<U>(u);
   }
 
@@ -191,7 +188,7 @@ public:
   {
     if(has_value())
       return std::move(**this);
-   
+
     return std::forward<U>(u);
   }
 
@@ -199,7 +196,7 @@ public:
   {
     if(has_value())
       get()->T::~T();
-    
+
     m_storage.engaged = false;
   }
 
@@ -230,7 +227,6 @@ public:
     else if(lhs.has_value() && !rhs.has_value())
     {
       rhs.init(std::move(*lhs));
-
       lhs.reset();
     }
     else if(!lhs.has_value() && rhs.has_value())
@@ -238,7 +234,6 @@ public:
       lhs.init(std::move(*rhs));
       rhs.reset();
     }
-
   }  
 };
 
