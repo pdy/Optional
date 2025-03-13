@@ -149,24 +149,21 @@ public:
     : m_storage()
   {
     if(other.has_value())
-    {
-      ::new(static_cast<void*>(get())) T(*other);
-      m_storage.engaged = true;
-    }
+      init(*other);
   }
+
+
+
 
   Optional(Optional<T> &&other)
     : m_storage()
   {
     if(other.has_value())
-    {
-      ::new(static_cast<void*>(get())) T(std::move(*other));
-      m_storage.engaged = true;
-    }
+      init(*other);
   }
 
   ~Optional() = default;
- 
+
   const T& operator*() const & { assert(has_value()); return m_storage.value; }
   T& operator*() & { assert(has_value()); return m_storage.value; }
 
