@@ -144,10 +144,10 @@ TEST(Optional_11_UT, observeMoveCtorWithCallable)
 
 TEST(Optional_11_UT, dtorCalledOnReset)
 {
-  bool dtorCalled = false;
+  unsigned dtorCalled = 0;
   
-  Optional<util::DtorCalled> val = util::DtorCalled(dtorCalled);
-  
+  Optional<util::DtorCalled> val{util::DtorCalled(dtorCalled)};
+
   EXPECT_FALSE(!val);
   EXPECT_TRUE(val);
   EXPECT_TRUE(val.has_value());
@@ -155,5 +155,10 @@ TEST(Optional_11_UT, dtorCalledOnReset)
   EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_FALSE(std::is_trivially_destructible<decltype(val)>::value);
 
-  EXPECT_TRUE(dtorCalled);
+  EXPECT_EQ(1, dtorCalled); // moved from object called dtor
+
+  val.reset(); // we should call dtor here as well
+
+  EXPECT_EQ(2, dtorCalled);
+
 }

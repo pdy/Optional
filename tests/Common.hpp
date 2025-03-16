@@ -69,19 +69,19 @@ struct Observe
 
 struct DtorCalled
 {
-  bool &dtorCalled;
+  unsigned &dtorCalled;
 
   DtorCalled(const DtorCalled&) = default;
   DtorCalled(DtorCalled&&) = default;
 
-  DtorCalled(bool &dtorCalledRef)
+  DtorCalled(unsigned &dtorCalledRef)
     : dtorCalled{dtorCalledRef}
   {
   }
 
   ~DtorCalled()
   {
-    dtorCalled = true;
+    ++dtorCalled;
   }
 };
 
