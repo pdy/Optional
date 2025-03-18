@@ -33,13 +33,31 @@
 namespace detail {
 
 template<typename T>
-using non_const_t = typename std::remove_const<T>::type;
+struct remove_const
+{
+  using type = T;
+};
+
+template<typename T>
+struct remove_const<const T>
+{
+  using type = T;
+};
+
+template<typename T>
+using non_const_t = typename remove_const<T>::type;
+
+template<typename T>
+typename std::add_rvalue_reference<T>::type declval() noexcept
+{
+  static_assert(false, "declval not allowed in an ecaluated context");
+}
 
 template<typename T>
 struct is_noexcept_swappable
 {
   using NonConst_T = non_const_t<T>;
-  static constexpr bool value = noexcept(swap(std::declval<NonConst_T&>(), std::declval<NonConst_T&>()));
+  static constexpr bool value = noexcept(swap(detail::declval<NonConst_T&>(), detail::declval<NonConst_T&>()));
 };
 
 template<typename T, typename TSelf, typename Tag>

@@ -47,5 +47,5 @@ fi
 make $BUILD &&
 
 pushd ./build/$BUILD/bin &&
-./Optional_20_UT && ./Optional_11_UT
+./Optional_20_UT && ./Optional_11_UT && ./TraitsUT
 popd

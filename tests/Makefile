@@ -53,6 +53,7 @@ post-build: main-build
 main-build: pre-build
 	@$(MAKE) --no-print-directory $(DESTBIN)/Optional_20_UT
 	@$(MAKE) --no-print-directory $(DESTBIN)/Optional_11_UT
+	@$(MAKE) --no-print-directory $(DESTBIN)/TraitsUT
 
 clean:
 	@rm -r $(ROOT_BUILD)
@@ -69,6 +70,10 @@ $(DESTBIN)/Optional_11_UT: $(OBJ_PATH)/Optional_11_UT.o
 	@$(CXX) $(CXXFLAGS_11) $(TEST_FLAGS) -o $@ $^ $(LD_FLAGS) $(GTEST_LIBS) $(LD_LIBS) 
 	@echo "$<"
 
+$(DESTBIN)/TraitsUT: $(OBJ_PATH)/TraitsUT.o
+	@$(CXX) $(CXXFLAGS_20) $(TEST_FLAGS) -o $@ $^ $(LD_FLAGS) $(GTEST_LIBS) $(LD_LIBS) 
+	@echo "$<"
+
 # -include $(TESTS_ROOT)/../pch.hpp to be added after CXX
 $(OBJ_PATH)/Optional_20_UT.o: $(TESTS_ROOT)/Optional_20_UT.cpp
 	@$(CXX) $(CXXFLAGS_20) $(TEST_FLAGS) -c -o $@ $^ 
@@ -78,3 +83,6 @@ $(OBJ_PATH)/Optional_11_UT.o: $(TESTS_ROOT)/Optional_11_UT.cpp
 	@$(CXX) $(CXXFLAGS_11) $(TEST_FLAGS) -c -o $@ $^
 	@echo "$<"
 
+$(OBJ_PATH)/TraitsUT.o: $(TESTS_ROOT)/TraitsUT.cpp
+	@$(CXX) $(CXXFLAGS_20) $(TEST_FLAGS) -c -o $@ $^ 
+	@echo "$<"
