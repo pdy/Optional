@@ -80,7 +80,7 @@ struct is_noxcept_move_constructible
 };
 
 template<typename T>
-struct has_noexcept_copy_ctor
+struct is_noexcept_copy_constructible
 {
   using NonConst_T = non_const_t<T>;
 //  static constexpr bool value = noexcept(T(std::declval<T&>())); 
@@ -183,7 +183,7 @@ class Optional final : public detail::AddArrowOperator<T, Optional<T>, typename 
 public:
   Optional() = default; 
 
-  constexpr Optional(const T &val) noexcept(detail::has_noexcept_copy_ctor<T>::value)
+  constexpr Optional(const T &val) noexcept(detail::is_noexcept_copy_constructible<T>::value)
     : m_storage(val)
   {}
 
@@ -191,7 +191,7 @@ public:
     : m_storage(std::move(val))
   {}
 
-  Optional(const Optional<T> &other) noexcept(detail::has_noexcept_copy_ctor<T>::value)
+  Optional(const Optional<T> &other) noexcept(detail::is_noexcept_copy_constructible<T>::value)
     : m_storage()
   {
     if(other.has_value())
