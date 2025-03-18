@@ -41,3 +41,26 @@ TEST(TraitsUT, removeConst)
   const bool libWorks = std::is_same_v<T, detail::non_const_t<Const_T>>;
   EXPECT_TRUE(libWorks);
 }
+
+TEST(TraitsUT, noexceptMoveCtor)
+{
+  struct TypeNoexceptMove
+  {
+    int placeholder {0};
+
+    TypeNoexceptMove() = default;
+    TypeNoexceptMove(TypeNoexceptMove&&) = default;
+  };
+
+  struct TypeThrowMove
+  {
+    int placeholder {0};
+
+    TypeThrowMove() = default;
+    TypeThrowMove(TypeThrowMove&&) {}
+  };
+
+  EXPECT_TRUE(detail::is_noxcept_move_constructble<int>::value);
+  EXPECT_TRUE(detail::is_noxcept_move_constructble<TypeNoexceptMove>::value);
+  EXPECT_FALSE(detail::is_noxcept_move_constructble<TypeThrowMove>::value);
+}

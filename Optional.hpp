@@ -48,6 +48,9 @@ template<typename T>
 using non_const_t = typename remove_const<T>::type;
 
 template<typename T>
+using is_noxcept_move_constructble = std::is_nothrow_move_constructible<T>;
+
+template<typename T>
 typename std::add_rvalue_reference<T>::type declval() noexcept
 {
   static_assert(false, "declval not allowed in an ecaluated context");
@@ -235,7 +238,7 @@ public:
     return *this;
   }
 
-  friend void swap(Optional<T> &lhs, Optional<T> &rhs) noexcept(std::is_nothrow_move_constructible<T>::value)
+  friend void swap(Optional<T> &lhs, Optional<T> &rhs) noexcept(detail::is_noxcept_move_constructble<T>::value)
   {
     if(lhs.has_value() && rhs.has_value())
     {

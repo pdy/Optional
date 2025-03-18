@@ -13,6 +13,8 @@ flags = [
     '-Wno-c++98-compat-pedantic',
     '-Wno-padded',
     '-Wno-unused-template',
+    '-Wno-unused-member-function',
+    '-Wno-unneeded-member-function',
     '-std=c++20',
     '-stdlib=libstdc++',
     '-x','c++',
