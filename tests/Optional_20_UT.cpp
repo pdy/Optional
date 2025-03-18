@@ -49,6 +49,7 @@ TYPED_TEST_P(Optional_20_ArithTests, emptyTest)
   EXPECT_TRUE(util::size_check<TypeParam>());
   EXPECT_TRUE(util::has_noexcept_swap<decltype(empty)>());
   EXPECT_TRUE(std::is_trivially_destructible_v<decltype(empty)>);
+  EXPECT_TRUE(std::is_nothrow_move_constructible_v<decltype(empty)>);
 }
 
 TYPED_TEST_P(Optional_20_ArithTests, ctorAndReset)
@@ -62,6 +63,7 @@ TYPED_TEST_P(Optional_20_ArithTests, ctorAndReset)
   EXPECT_TRUE(util::size_check<TypeParam>());
   EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible_v<decltype(val)>);
+  EXPECT_TRUE(std::is_nothrow_move_constructible_v<decltype(val)>);
 
   val.reset();
 
@@ -72,6 +74,7 @@ TYPED_TEST_P(Optional_20_ArithTests, ctorAndReset)
   EXPECT_TRUE(util::size_check<TypeParam>());
   EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible_v<decltype(val)>);
+  EXPECT_TRUE(std::is_nothrow_move_constructible_v<decltype(val)>);
 }
 
 TYPED_TEST_P(Optional_20_ArithTests, assignValue)
@@ -110,6 +113,7 @@ TYPED_TEST_P(Optional_20_ArithTests, returnFromCallable)
   EXPECT_TRUE(util::size_check<TypeParam>());
   EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_TRUE(std::is_trivially_destructible_v<decltype(val)>);
+  EXPECT_TRUE(std::is_nothrow_move_constructible_v<decltype(val)>);
 
   EXPECT_TRUE(val_2);
   EXPECT_FALSE(!val_2);
@@ -117,6 +121,7 @@ TYPED_TEST_P(Optional_20_ArithTests, returnFromCallable)
   EXPECT_EQ(TypeParam{10}, val_2.value_or(TypeParam{5}));
   EXPECT_TRUE(util::has_noexcept_swap<decltype(val_2)>());
   EXPECT_TRUE(std::is_trivially_destructible_v<decltype(val_2)>);
+  EXPECT_TRUE(std::is_nothrow_move_constructible_v<decltype(val_2)>);
 }
 
 REGISTER_TYPED_TEST_SUITE_P(Optional_20_ArithTests, emptyTest, ctorAndReset, assignValue, assingToEmpty, returnFromCallable);
@@ -186,10 +191,10 @@ TEST(Optional_20_UT, observeMoveCtorWithCallable)
 
 TEST(Optional_20_UT, dtorCalledOnReset)
 {
-  unsigned dtorCalled = false;
+  unsigned dtorCalled = 0;
   
-  Optional<util::DtorCalled> val = util::DtorCalled(dtorCalled);
-  
+  Optional<util::DtorCalled> val{util::DtorCalled(dtorCalled)};
+
   EXPECT_FALSE(!val);
   EXPECT_TRUE(val);
   EXPECT_TRUE(val.has_value());
@@ -197,5 +202,10 @@ TEST(Optional_20_UT, dtorCalledOnReset)
   EXPECT_TRUE(util::has_noexcept_swap<decltype(val)>());
   EXPECT_FALSE(std::is_trivially_destructible<decltype(val)>::value);
 
-  EXPECT_TRUE(dtorCalled);
+  EXPECT_EQ(1, dtorCalled); // moved from object called dtor
+
+  val.reset(); // we should call dtor here as well
+
+  EXPECT_EQ(2, dtorCalled);
+
 }

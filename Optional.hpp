@@ -60,15 +60,9 @@ struct enable_if<false, T>
 #endif
 
 template<typename T>
-struct is_noxcept_move_constructble 
-{
-  constexpr static bool value = std::is_nothrow_constructible<T, T&&>::value;
-};
-
-template<typename T>
 typename std::add_rvalue_reference<T>::type declval() noexcept
 {
-  static_assert(false, "declval not allowed in an ecaluated context");
+  static_assert(false, "declval not allowed in an evaluated context");
 }
 
 template<typename T>
@@ -76,6 +70,21 @@ struct is_noexcept_swappable
 {
   using NonConst_T = non_const_t<T>;
   static constexpr bool value = noexcept(swap(detail::declval<NonConst_T&>(), detail::declval<NonConst_T&>()));
+};
+
+template<typename T>
+struct is_noxcept_move_constructible 
+{
+  using NonConst_T = non_const_t<T>;
+  constexpr static bool value = std::is_nothrow_constructible<NonConst_T, NonConst_T&&>::value;
+};
+
+template<typename T>
+struct has_noexcept_copy_ctor
+{
+  using NonConst_T = non_const_t<T>;
+//  static constexpr bool value = noexcept(T(std::declval<T&>())); 
+  static constexpr bool value = std::is_nothrow_constructible<NonConst_T, const NonConst_T&>::value;
 };
 
 template<typename T, typename TSelf, typename Tag>
@@ -109,6 +118,7 @@ struct storage_trivial_dtor
   explicit constexpr storage_trivial_dtor(T &&val) noexcept
     : value{std::move(val)}, engaged{true}
   {}
+
   ~storage_trivial_dtor() = default;
 
 };
@@ -173,22 +183,22 @@ class Optional final : public detail::AddArrowOperator<T, Optional<T>, typename 
 public:
   Optional() = default; 
 
-  constexpr Optional(const T &val) noexcept
+  constexpr Optional(const T &val) noexcept(detail::has_noexcept_copy_ctor<T>::value)
     : m_storage(val)
   {}
 
-  constexpr Optional(T &&val) noexcept
+  constexpr Optional(T &&val) noexcept(detail::is_noxcept_move_constructible<T>::value)
     : m_storage(std::move(val))
   {}
 
-  Optional(const Optional<T> &other)
+  Optional(const Optional<T> &other) noexcept(detail::has_noexcept_copy_ctor<T>::value)
     : m_storage()
   {
     if(other.has_value())
       init(*other);
   }
 
-  Optional(Optional<T> &&other)
+  Optional(Optional<T> &&other) noexcept(detail::is_noxcept_move_constructible<T>::value)
     : m_storage()
   {
     if(other.has_value())
@@ -253,7 +263,7 @@ public:
     return *this;
   }
 
-  friend void swap(Optional<T> &lhs, Optional<T> &rhs) noexcept(detail::is_noxcept_move_constructble<T>::value)
+  friend void swap(Optional<T> &lhs, Optional<T> &rhs) noexcept(detail::is_noxcept_move_constructible<T>::value)
   {
     if(lhs.has_value() && rhs.has_value())
     {

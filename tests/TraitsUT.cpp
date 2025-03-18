@@ -34,9 +34,6 @@ TEST(TraitsUT, removeConst)
 {
   using T = int;
   using Const_T = const int;
-  
- // const bool stdWorks = std::is_same_v<T, std::remove_const_t<Const_T> >;
-//  ASSERT_TRUE(stdWorks);
 
   const bool libWorks = std::is_same_v<T, detail::non_const_t<Const_T>>;
   EXPECT_TRUE(libWorks);
@@ -44,14 +41,30 @@ TEST(TraitsUT, removeConst)
 
 TEST(TraitsUT, noexceptMoveCtor)
 {
+  struct TypeDefaultMove
+  {
+    int placeholder {0};
+
+    TypeDefaultMove() = default;
+    TypeDefaultMove(TypeDefaultMove&&) = default;
+  };
+
   struct TypeNoexceptMove
   {
     int placeholder {0};
 
-    TypeNoexceptMove() = default;
-    TypeNoexceptMove(TypeNoexceptMove&&) = default;
+    TypeNoexceptMove() = default; 
+    TypeNoexceptMove(TypeNoexceptMove&&) noexcept {}
   };
+  
+  struct TypeNoexceptIntMove
+  {
+    int placeholder {0};
 
+    TypeNoexceptIntMove() = default; 
+    TypeNoexceptIntMove(TypeNoexceptIntMove&&) noexcept(noexcept(std::is_move_constructible_v<decltype(placeholder)>)) {}
+  };
+  
   struct TypeThrowMove
   {
     int placeholder {0};
@@ -60,7 +73,10 @@ TEST(TraitsUT, noexceptMoveCtor)
     TypeThrowMove(TypeThrowMove&&) {}
   };
 
-  EXPECT_TRUE(detail::is_noxcept_move_constructble<int>::value);
-  EXPECT_TRUE(detail::is_noxcept_move_constructble<TypeNoexceptMove>::value);
-  EXPECT_FALSE(detail::is_noxcept_move_constructble<TypeThrowMove>::value);
+  EXPECT_TRUE(detail::is_noxcept_move_constructible<int>::value);
+  EXPECT_TRUE(detail::is_noxcept_move_constructible<TypeDefaultMove>::value);
+  EXPECT_TRUE(detail::is_noxcept_move_constructible<TypeNoexceptMove>::value);
+  EXPECT_TRUE(detail::is_noxcept_move_constructible<TypeNoexceptIntMove>::value);
+   
+  EXPECT_FALSE(detail::is_noxcept_move_constructible<TypeThrowMove>::value);
 }
