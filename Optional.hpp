@@ -47,8 +47,23 @@ struct remove_const<const T>
 template<typename T>
 using non_const_t = typename remove_const<T>::type;
 
+#if 0
+template<bool B, typename T = void>
+struct enable_if
+{
+  using type = T;
+};
+
 template<typename T>
-using is_noxcept_move_constructble = std::is_nothrow_move_constructible<T>;
+struct enable_if<false, T>
+{};
+#endif
+
+template<typename T>
+struct is_noxcept_move_constructble 
+{
+  constexpr static bool value = std::is_nothrow_constructible<T, T&&>::value;
+};
 
 template<typename T>
 typename std::add_rvalue_reference<T>::type declval() noexcept
