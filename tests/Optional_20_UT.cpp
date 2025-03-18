@@ -186,7 +186,7 @@ TEST(Optional_20_UT, observeMoveCtorWithCallable)
 
 TEST(Optional_20_UT, dtorCalledOnReset)
 {
-  bool dtorCalled = false;
+  unsigned dtorCalled = false;
   
   Optional<util::DtorCalled> val = util::DtorCalled(dtorCalled);
   
