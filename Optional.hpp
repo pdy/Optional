@@ -172,7 +172,7 @@ using optional_storage = typename conditional<
     storage_trivial_dtor<non_const_t<T>>,
     storage_non_trivial_dtor<non_const_t<T>>>::type;
 
-} // namespace internal
+} // namespace detail
 
 
 template<typename T>
