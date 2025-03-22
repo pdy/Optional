@@ -76,15 +76,14 @@ template<typename T>
 struct is_noxcept_move_constructible 
 {
   using NonConst_T = non_const_t<T>;
-  constexpr static bool value = std::is_nothrow_constructible<NonConst_T, NonConst_T&&>::value;
+  static constexpr bool value = noexcept(T(std::declval<T&&>())); 
 };
 
 template<typename T>
 struct is_noexcept_copy_constructible
 {
   using NonConst_T = non_const_t<T>;
-//  static constexpr bool value = noexcept(T(std::declval<T&>())); 
-  static constexpr bool value = std::is_nothrow_constructible<NonConst_T, const NonConst_T&>::value;
+  static constexpr bool value = noexcept(T(std::declval<T&>())); 
 };
 
 template<typename T, typename TSelf, typename Tag>
@@ -152,8 +151,23 @@ struct storage_non_trivial_dtor
   }
 };
 
+template<bool SWITCH, typename T, typename U>
+struct conditional {};
+
+template<typename T, typename U>
+struct conditional<true, T, U>
+{
+  using type = T;
+};
+
+template<typename T, typename U>
+struct conditional<false, T, U>
+{
+  using type = U;
+};
+
 template<typename T>
-using optional_storage = typename std::conditional<
+using optional_storage = typename conditional<
     std::is_trivially_destructible<non_const_t<T>>::value,
     storage_trivial_dtor<non_const_t<T>>,
     storage_non_trivial_dtor<non_const_t<T>>>::type;
@@ -238,7 +252,7 @@ public:
     return std::forward<U>(u);
   }
 
-  void reset() noexcept
+  void reset() noexcept // TODO: is_noexcept_dtor
   {
     if(has_value())
       get()->T::~T();

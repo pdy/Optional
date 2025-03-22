@@ -84,5 +84,5 @@ $(OBJ_PATH)/Optional_11_UT.o: $(TESTS_ROOT)/Optional_11_UT.cpp
 	@echo "$<"
 
 $(OBJ_PATH)/TraitsUT.o: $(TESTS_ROOT)/TraitsUT.cpp
-	@$(CXX) $(CXXFLAGS_20) $(TEST_FLAGS) -c -o $@ $^ 
+	@$(CXX) $(CXXFLAGS_20) -Wno-unused-member-function $(TEST_FLAGS) -c -o $@ $^ 
 	@echo "$<"

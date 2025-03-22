@@ -35,8 +35,8 @@ TEST(TraitsUT, removeConst)
   using T = int;
   using Const_T = const int;
 
-  const bool libWorks = std::is_same_v<T, detail::non_const_t<Const_T>>;
-  EXPECT_TRUE(libWorks);
+  const bool expectEq = std::is_same_v<T, detail::non_const_t<Const_T>>;
+  EXPECT_TRUE(expectEq);
 }
 
 TEST(TraitsUT, noexceptMoveCtor)
@@ -73,10 +73,84 @@ TEST(TraitsUT, noexceptMoveCtor)
     TypeThrowMove(TypeThrowMove&&) {}
   };
 
+  struct TypeExplicitThrowMove
+  {
+    int placeholder {0};
+
+    TypeExplicitThrowMove() = default;
+    TypeExplicitThrowMove(const TypeExplicitThrowMove&) noexcept(false) {}
+  };
+
   EXPECT_TRUE(detail::is_noxcept_move_constructible<int>::value);
   EXPECT_TRUE(detail::is_noxcept_move_constructible<TypeDefaultMove>::value);
   EXPECT_TRUE(detail::is_noxcept_move_constructible<TypeNoexceptMove>::value);
   EXPECT_TRUE(detail::is_noxcept_move_constructible<TypeNoexceptIntMove>::value);
-   
+
   EXPECT_FALSE(detail::is_noxcept_move_constructible<TypeThrowMove>::value);
+  EXPECT_FALSE(detail::is_noxcept_move_constructible<TypeExplicitThrowMove>::value);
 }
+
+TEST(TraitsUT, noexceptCopyCtor)
+{
+  struct TypeDefaultCopy
+  {
+    int placeholder {0};
+
+    TypeDefaultCopy() = default;
+    TypeDefaultCopy(const TypeDefaultCopy&) = default;
+  };
+
+  struct TypeNoexceptCopy
+  {
+    int placeholder {0};
+
+    TypeNoexceptCopy() = default; 
+    TypeNoexceptCopy(const TypeNoexceptCopy&) noexcept {}
+  };
+
+  struct TypeNoexceptIntCopy
+  {
+    int placeholder {0};
+
+    TypeNoexceptIntCopy() = default; 
+    TypeNoexceptIntCopy(const TypeNoexceptIntCopy&) noexcept(noexcept(std::is_nothrow_copy_constructible_v<decltype(placeholder)>)) {}
+  };
+
+  struct TypeThrowCopy
+  {
+    int placeholder {0};
+
+    TypeThrowCopy() = default;
+    TypeThrowCopy(const TypeThrowCopy&) {}
+  };
+
+  struct TypeExplicitThrowCopy
+  {
+    int placeholder {0};
+
+    TypeExplicitThrowCopy() = default;
+    TypeExplicitThrowCopy(const TypeExplicitThrowCopy&) noexcept(false) {}
+  };
+
+  EXPECT_TRUE(detail::is_noxcept_move_constructible<int>::value);
+  EXPECT_TRUE(detail::is_noxcept_move_constructible<TypeDefaultCopy>::value);
+  EXPECT_TRUE(detail::is_noxcept_move_constructible<TypeNoexceptCopy>::value);
+  EXPECT_TRUE(detail::is_noxcept_move_constructible<TypeNoexceptIntCopy>::value);
+
+  EXPECT_FALSE(detail::is_noxcept_move_constructible<TypeThrowCopy>::value);
+  EXPECT_FALSE(detail::is_noxcept_move_constructible<TypeExplicitThrowCopy>::value);
+}
+
+TEST(TraitsUT, conditional)
+{
+  using OnTrue = typename detail::conditional<true, int, double>::type;
+  using OnFalse = typename detail::conditional<false, int, double>::type;
+
+  const bool expectInt = std::is_same_v<int, OnTrue>;
+  const bool expectDouble = std::is_same_v<double, OnFalse>;
+
+  EXPECT_TRUE(expectInt);
+  EXPECT_TRUE(expectDouble);
+}
+
+
