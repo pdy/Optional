@@ -28,7 +28,7 @@
 
 #include <memory>
 #include <type_traits>
-#include <assert.h>
+#include <cassert>
 
 namespace detail {
 
@@ -76,15 +76,18 @@ template<typename T>
 struct is_noxcept_move_constructible 
 {
   using NonConst_T = non_const_t<T>;
-  static constexpr bool value = noexcept(T(std::declval<T&&>())); 
+  static constexpr bool value = noexcept(T(declval<T&&>())); 
 };
 
 template<typename T>
 struct is_noexcept_copy_constructible
 {
   using NonConst_T = non_const_t<T>;
-  static constexpr bool value = noexcept(T(std::declval<T&>())); 
+  static constexpr bool value = noexcept(T(declval<T&>())); 
 };
+
+template<typename T>
+using is_arithmetic_t = typename std::is_arithmetic<T>::type;
 
 template<typename T, typename TSelf, typename Tag>
 struct AddArrowOperator {};
@@ -174,7 +177,7 @@ using optional_storage = typename conditional<
 } // namespace detail
 
 template<typename T>
-class Optional final : public detail::AddArrowOperator<T, Optional<T>, typename std::is_arithmetic<T>::type>
+class Optional final : public detail::AddArrowOperator<T, Optional<T>, detail::is_arithmetic_t<T>>
 {
   detail::optional_storage<T> m_storage;
 
@@ -182,7 +185,7 @@ class Optional final : public detail::AddArrowOperator<T, Optional<T>, typename 
   detail::non_const_t<T>* get() { return std::addressof(m_storage.value); }
 
   template<typename ...Args>
-  void init(Args&& ...args)
+  void construct(Args&& ...args)
   {
     assert(!m_storage.engaged);
 
@@ -207,14 +210,14 @@ public:
     : m_storage()
   {
     if(other.has_value())
-      init(*other);
+      construct(*other);
   }
 
   Optional(Optional<T> &&other) noexcept(detail::is_noxcept_move_constructible<T>::value)
     : m_storage()
   {
     if(other.has_value())
-      init(*other);
+      construct(*other);
   }
 
   ~Optional() = default;
@@ -264,7 +267,7 @@ public:
     if(has_value())
       m_storage.value = std::forward<U>(val);
     else
-      init(std::forward<U>(val));
+      construct(std::forward<U>(val));
 
     return *this;
   }
@@ -284,12 +287,12 @@ public:
     }
     else if(lhs.has_value() && !rhs.has_value())
     {
-      rhs.init(std::move(*lhs));
+      rhs.construct(std::move(*lhs));
       lhs.reset();
     }
     else if(!lhs.has_value() && rhs.has_value())
     {
-      lhs.init(std::move(*rhs));
+      lhs.construct(std::move(*rhs));
       rhs.reset();
     }
   }  

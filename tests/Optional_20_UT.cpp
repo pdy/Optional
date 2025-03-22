@@ -38,6 +38,13 @@ class Optional_20_ArithTests : public testing::Test
 
 TYPED_TEST_SUITE_P(Optional_20_ArithTests);
 
+TYPED_TEST_P(Optional_20_ArithTests, isArithmetic)
+{
+  // this really should be in TraitsUT but I don't see the reason to create such typed list repetition
+  const bool isArithmetic = std::is_same_v<std::true_type, detail::is_arithmetic_t<TypeParam>>;
+  EXPECT_TRUE(isArithmetic);
+}
+
 TYPED_TEST_P(Optional_20_ArithTests, emptyTest)
 {
   const Optional<TypeParam> empty;
@@ -124,7 +131,15 @@ TYPED_TEST_P(Optional_20_ArithTests, returnFromCallable)
   EXPECT_TRUE(std::is_nothrow_move_constructible_v<decltype(val_2)>);
 }
 
-REGISTER_TYPED_TEST_SUITE_P(Optional_20_ArithTests, emptyTest, ctorAndReset, assignValue, assingToEmpty, returnFromCallable);
+REGISTER_TYPED_TEST_SUITE_P(
+    Optional_20_ArithTests,
+    emptyTest,
+    ctorAndReset,
+    assignValue,
+    assingToEmpty,
+    returnFromCallable,
+    isArithmetic
+);
 
 using TestTypes = ::testing::Types<
   char, signed char, unsigned char,

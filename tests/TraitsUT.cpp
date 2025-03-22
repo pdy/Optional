@@ -26,8 +26,6 @@
 
 #include <Optional.hpp>
 
-//#include "Common.hpp"
-
 #include <type_traits>
 
 TEST(TraitsUT, removeConst)
@@ -153,4 +151,22 @@ TEST(TraitsUT, conditional)
   EXPECT_TRUE(expectDouble);
 }
 
+template<typename T>
+class TraitsIsArithmetic : public testing::Test
+{};
+
+TYPED_TEST_SUITE_P(TraitsIsArithmetic);
+
+// positive test cases places in Optional_20_UT as it already consist types list
+TYPED_TEST_P(TraitsIsArithmetic, isArithmeticNegative)
+{
+  const bool isArithmetic = std::is_same_v<std::true_type, detail::is_arithmetic_t<TypeParam>>;
+  EXPECT_FALSE(isArithmetic);
+}
+
+REGISTER_TYPED_TEST_SUITE_P(TraitsIsArithmetic, isArithmeticNegative);
+
+using TestTypes = ::testing::Types<std::string, std::vector<int>, Optional<int>>;
+ 
+INSTANTIATE_TYPED_TEST_SUITE_P(My, TraitsIsArithmetic, TestTypes);
 
