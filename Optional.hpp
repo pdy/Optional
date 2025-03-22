@@ -119,7 +119,6 @@ struct storage_trivial_dtor
   {}
 
   ~storage_trivial_dtor() = default;
-
 };
 
 template<typename T>
@@ -173,7 +172,6 @@ using optional_storage = typename conditional<
     storage_non_trivial_dtor<non_const_t<T>>>::type;
 
 } // namespace detail
-
 
 template<typename T>
 class Optional final : public detail::AddArrowOperator<T, Optional<T>, typename std::is_arithmetic<T>::type>
