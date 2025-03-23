@@ -254,8 +254,7 @@ TYPED_TEST_SUITE_P(TraitsIsArithmetic);
 // positive test cases places in Optional_20_UT as it already consist types list
 TYPED_TEST_P(TraitsIsArithmetic, isArithmeticNegative)
 {
-  const bool isArithmetic = std::is_same_v<std::true_type, detail::is_arithmetic_t<TypeParam>>;
-  EXPECT_FALSE(isArithmetic);
+  EXPECT_FALSE(detail::is_arithmetic<TypeParam>::value);
 }
 
 REGISTER_TYPED_TEST_SUITE_P(TraitsIsArithmetic, isArithmeticNegative);

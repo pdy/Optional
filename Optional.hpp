@@ -82,24 +82,24 @@ template<typename T>
 struct is_noxcept_move_constructible 
 {
   using NonConst_T = non_const_t<T>;
-  static constexpr bool value = noexcept(T(declval<T&&>())); 
+  static constexpr bool value = noexcept(NonConst_T(declval<NonConst_T&&>())); 
 };
 
 template<typename T>
 struct is_noexcept_copy_constructible
 {
   using NonConst_T = non_const_t<T>;
-  static constexpr bool value = noexcept(T(declval<T&>())); 
+  static constexpr bool value = noexcept(NonConst_T(declval<NonConst_T&>())); 
 };
 
 template<typename T>
-using is_arithmetic_t = typename std::is_arithmetic<T>::type;
+struct is_arithmetic : std::is_arithmetic<T> {};
 
-template<typename T, typename TSelf, typename Tag>
+template<bool isArithmetic, typename T, typename TSelf>
 struct AddArrowOperator {};
 
 template<typename T, typename TSelf>
-struct AddArrowOperator<T, TSelf, std::false_type>
+struct AddArrowOperator<false, T, TSelf>
 {
   const T* operator->() const { return &(static_cast<const TSelf*>(this)->value()); }
   T* operator->() { return &(static_cast<TSelf*>(this)->value()); }
@@ -183,7 +183,7 @@ using optional_storage = typename conditional_type<
 } // namespace detail
 
 template<typename T>
-class Optional final : public detail::AddArrowOperator<T, Optional<T>, detail::is_arithmetic_t<T>>
+class Optional final : public detail::AddArrowOperator<detail::is_arithmetic<T>::value, T, Optional<T>>
 {
   detail::optional_storage<T> m_storage;
 

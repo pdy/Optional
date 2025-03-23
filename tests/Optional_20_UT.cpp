@@ -41,8 +41,7 @@ TYPED_TEST_SUITE_P(Optional_20_ArithTests);
 TYPED_TEST_P(Optional_20_ArithTests, isArithmetic)
 {
   // this really should be in TraitsUT but I don't see the reason to create such typed list repetition
-  const bool isArithmetic = std::is_same_v<std::true_type, detail::is_arithmetic_t<TypeParam>>;
-  EXPECT_TRUE(isArithmetic);
+  EXPECT_TRUE(detail::is_arithmetic<TypeParam>::value);
 }
 
 TYPED_TEST_P(Optional_20_ArithTests, emptyTest)
