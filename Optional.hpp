@@ -154,22 +154,22 @@ struct storage_non_trivial_dtor
 };
 
 template<bool SWITCH, typename T, typename U>
-struct conditional {};
+struct conditional_type {};
 
 template<typename T, typename U>
-struct conditional<true, T, U>
+struct conditional_type<true, T, U>
 {
   using type = T;
 };
 
 template<typename T, typename U>
-struct conditional<false, T, U>
+struct conditional_type<false, T, U>
 {
   using type = U;
 };
 
 template<typename T>
-using optional_storage = typename conditional<
+using optional_storage = typename conditional_type<
     std::is_trivially_destructible<non_const_t<T>>::value,
     storage_trivial_dtor<non_const_t<T>>,
     storage_non_trivial_dtor<non_const_t<T>>>::type;

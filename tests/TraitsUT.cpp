@@ -139,10 +139,40 @@ TEST(TraitsUT, noexceptCopyCtor)
   EXPECT_FALSE(detail::is_noxcept_move_constructible<TypeExplicitThrowCopy>::value);
 }
 
+namespace {
+  struct HasNoexceptSwap
+  {
+    int placeholder;
+
+    friend void swap(HasNoexceptSwap &lhs, HasNoexceptSwap &rhs) noexcept
+    {
+      using std::swap;
+      swap(lhs.placeholder, rhs.placeholder);
+    }
+  };
+
+  struct HasNoNoexceptSwap
+  {
+    int placeholder;
+
+    friend void swap(HasNoNoexceptSwap &lhs, HasNoNoexceptSwap &rhs)
+    {
+      using std::swap;
+      swap(lhs.placeholder, rhs.placeholder);
+    }
+  };
+}
+
+TEST(TraitsUT, noexcepetSwappable)
+{
+  EXPECT_TRUE(detail::is_noexcept_swappable<HasNoexceptSwap>::value);
+  EXPECT_FALSE(detail::is_noexcept_swappable<HasNoNoexceptSwap>::value);
+}
+
 TEST(TraitsUT, conditional)
 {
-  using OnTrue = typename detail::conditional<true, int, double>::type;
-  using OnFalse = typename detail::conditional<false, int, double>::type;
+  using OnTrue = typename detail::conditional_type<true, int, double>::type;
+  using OnFalse = typename detail::conditional_type<false, int, double>::type;
 
   const bool expectInt = std::is_same_v<int, OnTrue>;
   const bool expectDouble = std::is_same_v<double, OnFalse>;
