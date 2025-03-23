@@ -245,6 +245,29 @@ TEST(TraitsUt, addRvalueRef)
   }
 }
 
+TEST(TraitsUT, isTriviallyDestructible)
+{
+  class EmptyClassType {};
+  class ClassType
+  {
+    ~ClassType() = default;
+  };
+
+  class ClassType_2
+  {
+    ~ClassType_2() {}
+  };
+
+  EXPECT_TRUE(detail::is_trivially_destructible<int>::value);
+  EXPECT_TRUE(detail::is_trivially_destructible<double>::value);
+  EXPECT_TRUE(detail::is_trivially_destructible<EmptyClassType>::value);
+
+  EXPECT_FALSE(detail::is_trivially_destructible<ClassType>::value);
+  EXPECT_FALSE(detail::is_trivially_destructible<ClassType_2>::value);
+}
+
+
+
 template<typename T>
 class TraitsIsArithmetic : public testing::Test
 {};

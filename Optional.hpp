@@ -93,7 +93,28 @@ struct is_noexcept_copy_constructible
 };
 
 template<typename T>
+struct is_trivially_destructible : std::is_trivially_destructible<T> {};
+
+template<typename T>
+struct is_noexcept_destructible : std::is_nothrow_destructible<T> {};
+
+template<typename T>
 struct is_arithmetic : std::is_arithmetic<T> {};
+
+template<bool SWITCH, typename T, typename U>
+struct conditional_type {};
+
+template<typename T, typename U>
+struct conditional_type<true, T, U>
+{
+  using type = T;
+};
+
+template<typename T, typename U>
+struct conditional_type<false, T, U>
+{
+  using type = U;
+};
 
 template<bool isArithmetic, typename T, typename TSelf>
 struct AddArrowOperator {};
@@ -152,31 +173,16 @@ struct storage_non_trivial_dtor
     : value{std::move(val)}, engaged{true}
   {}
   
-  ~storage_non_trivial_dtor()
+  ~storage_non_trivial_dtor() noexcept(is_noexcept_destructible<T>::value)
   {
     if(engaged)
       value.T::~T();
   }
 };
 
-template<bool SWITCH, typename T, typename U>
-struct conditional_type {};
-
-template<typename T, typename U>
-struct conditional_type<true, T, U>
-{
-  using type = T;
-};
-
-template<typename T, typename U>
-struct conditional_type<false, T, U>
-{
-  using type = U;
-};
-
 template<typename T>
 using optional_storage = typename conditional_type<
-    std::is_trivially_destructible<non_const_t<T>>::value,
+    is_trivially_destructible<non_const_t<T>>::value,
     storage_trivial_dtor<non_const_t<T>>,
     storage_non_trivial_dtor<non_const_t<T>>>::type;
 
@@ -259,7 +265,7 @@ public:
     return std::forward<U>(u);
   }
 
-  void reset() noexcept // TODO: is_noexcept_dtor
+  void reset() noexcept(detail::is_noexcept_destructible<T>::value)
   {
     if(has_value())
       get()->T::~T();
