@@ -181,6 +181,70 @@ TEST(TraitsUT, conditional)
   EXPECT_TRUE(expectDouble);
 }
 
+TEST(TraitsUt, addRvalueRef)
+{
+  {
+    using T = int;
+    using Rval_T = int&&;
+    using ConstRval_T = const int&&;
+    using Lref_T = int&;
+    using PtrRval_T = int*&&;
+    using FuncDeclRval_T = int(&&)(int);
+
+    using Actual = typename detail::add_rvalue_ref<T>::type;
+    using ActualPtr = typename detail::add_rvalue_ref<T*>::type;
+    using ActualConst = typename detail::add_rvalue_ref<const T>::type;
+    using ActualOnRval = typename detail::add_rvalue_ref<Rval_T>::type;
+    using ActualOnLref_T = typename detail::add_rvalue_ref<Lref_T>::type;
+    using ActualOnFunc = typename detail::add_rvalue_ref<T(T)>::type;
+
+    const bool sameTypes = std::is_same_v<Rval_T, Actual>;
+    const bool sameOnPtr = std::is_same_v<PtrRval_T, ActualPtr>;
+    const bool sameOnConst = std::is_same_v<ConstRval_T, ActualConst>;
+    const bool sameTypes_OnRval = std::is_same_v<Rval_T, ActualOnRval>;
+    const bool sameTypes_OnLref_T = std::is_same_v<Lref_T, ActualOnLref_T>;
+    const bool sameOnFunc = std::is_same_v<FuncDeclRval_T, ActualOnFunc>;
+
+    EXPECT_TRUE(sameTypes);
+    EXPECT_TRUE(sameOnPtr);
+    EXPECT_TRUE(sameOnConst);
+    EXPECT_TRUE(sameTypes_OnRval);
+    EXPECT_TRUE(sameTypes_OnLref_T);
+    EXPECT_TRUE(sameOnFunc);
+  }
+
+  {
+    class ClassType {};
+    using T = ClassType;
+    using Rval_T = ClassType&&;
+    using ConstRval_T = const ClassType&&;
+    using Lref_T = ClassType&;
+    using PtrRval_T = ClassType*&&;
+    using FuncDeclRval_T = ClassType(&&)(ClassType);
+
+    using Actual = typename detail::add_rvalue_ref<T>::type;
+    using ActualPtr = typename detail::add_rvalue_ref<T*>::type;
+    using ActualConst = typename detail::add_rvalue_ref<const T>::type;
+    using ActualOnRval = typename detail::add_rvalue_ref<Rval_T>::type;
+    using ActualOnLref_T = typename detail::add_rvalue_ref<Lref_T>::type;
+    using ActualOnFunc = typename detail::add_rvalue_ref<T(T)>::type;
+
+    const bool sameTypes = std::is_same_v<Rval_T, Actual>;
+    const bool sameOnPtr = std::is_same_v<PtrRval_T, ActualPtr>;
+    const bool sameOnConst = std::is_same_v<ConstRval_T, ActualConst>;
+    const bool sameTypes_OnRval = std::is_same_v<Rval_T, ActualOnRval>;
+    const bool sameTypes_OnLref_T = std::is_same_v<Lref_T, ActualOnLref_T>;
+    const bool sameOnFunc = std::is_same_v<FuncDeclRval_T, ActualOnFunc>;
+
+    EXPECT_TRUE(sameTypes);
+    EXPECT_TRUE(sameOnPtr);
+    EXPECT_TRUE(sameOnConst);
+    EXPECT_TRUE(sameTypes_OnRval);
+    EXPECT_TRUE(sameTypes_OnLref_T);
+    EXPECT_TRUE(sameOnFunc);
+  }
+}
+
 template<typename T>
 class TraitsIsArithmetic : public testing::Test
 {};

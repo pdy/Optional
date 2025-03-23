@@ -60,7 +60,13 @@ struct enable_if<false, T>
 #endif
 
 template<typename T>
-typename std::add_rvalue_reference<T>::type declval() noexcept
+struct add_rvalue_ref
+{
+  using type = typename std::add_rvalue_reference<T>::type;
+};
+
+template<typename T>
+typename add_rvalue_ref<T>::type declval() noexcept
 {
   static_assert(false, "declval not allowed in an evaluated context");
 }
