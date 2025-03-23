@@ -1,2 +1,2 @@
 # Optional
-Single-file, header-only nullable object implementation for C++11/14
+Single-file, header-only nullable object implementation compatible with C++11/14.
