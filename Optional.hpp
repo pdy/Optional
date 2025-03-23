@@ -98,6 +98,29 @@ struct is_trivially_destructible : std::is_trivially_destructible<T> {};
 template<typename T>
 struct is_noexcept_destructible : std::is_nothrow_destructible<T> {};
 
+#if 0
+template<bool isTrivialDtor, typename T>
+struct is_noexcept_destructible_helper {};
+
+template<typename T>
+struct is_noexcept_destructible_helper<true, T>
+{
+  static constexpr bool value = true;
+};
+
+template<typename T>
+struct is_noexcept_destructible_helper<false, T>
+{
+  using NonConst_T = non_const_t<T>;
+  static constexpr bool value = noexcept(declval<NonConst_T&>().~NonConst_T());
+};
+
+template<typename T>
+struct is_noexcept_destructible
+  : is_noexcept_destructible_helper<is_trivially_destructible<T>::value, T>
+{};
+#endif
+
 template<typename T>
 struct is_arithmetic : std::is_arithmetic<T> {};
 
