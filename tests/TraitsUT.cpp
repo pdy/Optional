@@ -288,9 +288,9 @@ TEST(TraitsUT, isNoexceptDestructible)
   EXPECT_TRUE(detail::is_noexcept_destructible<double>::value);
   EXPECT_TRUE(detail::is_noexcept_destructible<EmptyClassType>::value);
   EXPECT_FALSE(detail::is_noexcept_destructible<ClassType>::value);
-  EXPECT_FALSE(detail::is_trivially_destructible<ClassType_1>::value);
+  EXPECT_FALSE(detail::is_noexcept_destructible<ClassType_1>::value);
 
-  EXPECT_FALSE(detail::is_trivially_destructible<ClassType_2>::value);
+  EXPECT_FALSE(detail::is_noexcept_destructible<ClassType_2>::value);
 }
 
 
