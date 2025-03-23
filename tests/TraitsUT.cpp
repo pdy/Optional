@@ -264,6 +264,13 @@ TEST(TraitsUT, isTriviallyDestructible)
 
   EXPECT_FALSE(detail::is_trivially_destructible<ClassType>::value);
   EXPECT_FALSE(detail::is_trivially_destructible<ClassType_2>::value);
+
+  EXPECT_TRUE(detail::is_trivially_destructible<const int>::value);
+  EXPECT_TRUE(detail::is_trivially_destructible<const double>::value);
+  EXPECT_TRUE(detail::is_trivially_destructible<const EmptyClassType>::value);
+
+  EXPECT_FALSE(detail::is_trivially_destructible<const ClassType>::value);
+  EXPECT_FALSE(detail::is_trivially_destructible<const ClassType_2>::value);
 }
 
 TEST(TraitsUT, isNoexceptDestructible)
@@ -291,6 +298,14 @@ TEST(TraitsUT, isNoexceptDestructible)
   EXPECT_FALSE(detail::is_noexcept_destructible<ClassType_1>::value);
 
   EXPECT_FALSE(detail::is_noexcept_destructible<ClassType_2>::value);
+
+  EXPECT_TRUE(detail::is_noexcept_destructible<const int>::value);
+  EXPECT_TRUE(detail::is_noexcept_destructible<const double>::value);
+  EXPECT_TRUE(detail::is_noexcept_destructible<const EmptyClassType>::value);
+  EXPECT_FALSE(detail::is_noexcept_destructible<const ClassType>::value);
+  EXPECT_FALSE(detail::is_noexcept_destructible<const ClassType_1>::value);
+
+  EXPECT_FALSE(detail::is_noexcept_destructible<const ClassType_2>::value);
 }
 
 
